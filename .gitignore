@@ -164,3 +164,11 @@ cython_debug/
 # EMG2Pose Specific
 logs/
 data/
+
+# emg2pose data — never commit (mini is 618MB, full is 431GB)
+*.hdf5
+*.tar
+*.tar.gz
+emg2pose_dataset_mini/
+emg2pose_dataset/
+emg2pose_metadata.csv
