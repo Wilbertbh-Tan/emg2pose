@@ -172,3 +172,15 @@ data/
 emg2pose_dataset_mini/
 emg2pose_dataset/
 emg2pose_metadata.csv
+
+# Local scratch / personal working files
+Wilbert_EDA/
+papers/
+*.local.ipynb
+scratch/
+.cache/
+*.npy
+
+# Jupyter checkpoints (may embed absolute paths in outputs)
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/

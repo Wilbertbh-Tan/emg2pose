@@ -1,38 +1,40 @@
 # emg2pose
 
-[ [`Paper`](https://arxiv.org/abs/2412.02725) ] [ [`Dataset`](https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset.tar) ] [ [`Blog`](https://ai.meta.com/blog/open-sourcing-surface-electromyography-datasets-neurips-2024/) ] [ [`BibTeX`](#citing-emg2pose) ]
+[ `[Paper](https://arxiv.org/abs/2412.02725)` ] [ `[Dataset](https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset.tar)` ] [ `[Blog](https://ai.meta.com/blog/open-sourcing-surface-electromyography-datasets-neurips-2024/)` ] [ `[BibTeX](#citing-emg2pose)` ]
 
 A dataset of Surface electromyography (sEMG) recordings paired with ground-truth, motion-capture recordings of the hands. Data loading, baseline model training, and baseline model evaluation code are provided.
 
-<p align="center">
-  <img src="https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_overview.png" alt="EMG2Pose Overview" width="75%">
-</p>
 
 
 ## Data
+
 The entire dataset has $25,253$ HDF5 files, each consisting of time-aligned, 2kHz sEMG and joint angles for a single hand in a single stage. Each stage is ~1 minute. There are $193$ participants, spanning $370$ hours and $29$ stages. `emg2pose.data.Emg2PoseSessionData` offers a programmatic read-only interface into the HDF5 session files.
 
 The full dataset statistics are as follows:
 
-<p align="center">
-  <img src="images/dataset_stats.png" alt="Dataset statistics" width="75%">
-</p>
+
 
 The `metadata.csv` file includes the following information for each HDF5 file:
 
-| Column             | Description |
-|--------------------|-------------|
-| `user`              | Anonymized user ID |
-| `session`           | Recording session (there are multiple stages per recording session) |
-| `stage`             | Name of stage |
-| `side`              | Hand side (`left` or `right`) |
-| `moving_hand`       | Whether the hand is prompted to move during the stage |
-| `held_out_user`     | Whether the user is held out from the training set |
-| `held_out_stage`    | Whether the stage is held out from the training set |
-| `split`             | `train`, `test`, or `val` |
-| `generalization`    | Type of generalization; across user (`user`), stage (`stage`), or across user and stage (`user_stage`) |
+
+| Column           | Description                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
+| `user`           | Anonymized user ID                                                                                     |
+| `session`        | Recording session (there are multiple stages per recording session)                                    |
+| `stage`          | Name of stage                                                                                          |
+| `side`           | Hand side (`left` or `right`)                                                                          |
+| `moving_hand`    | Whether the hand is prompted to move during the stage                                                  |
+| `held_out_user`  | Whether the user is held out from the training set                                                     |
+| `held_out_stage` | Whether the stage is held out from the training set                                                    |
+| `split`          | `train`, `test`, or `val`                                                                              |
+| `generalization` | Type of generalization; across user (`user`), stage (`stage`), or across user and stage (`user_stage`) |
+
+
+
 
 ## Setup
+
+
 
 ### Environment and Dependencies
 
@@ -53,6 +55,8 @@ pip install -e .
 pip install -e emg2pose/UmeTrack
 ```
 
+
+
 ## Getting Started (Small, Sanity-Check Dataset)
 
 The full dataset is $431$ GiB -- which can be cumbersome for a quick start. As a solution, we
@@ -70,6 +74,8 @@ NOTE: this metadata file is also included in each of the dataset downloads
 cd ~ && curl https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_metadata.csv -o emg2pose_metadata.csv
 ```
 
+
+
 ### Download a Smaller Version of the Dataset (~600 MiB)
 
 ```shell
@@ -79,6 +85,8 @@ cd ~ && curl "https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset_min
 # Unpack the tar to ~/emg2pose_dataset_mini
 tar -xvf emg2pose_dataset_mini.tar
 ```
+
+
 
 ### Sanity Check Train / Eval
 
@@ -98,6 +106,8 @@ data_split=mini_split \
 data_location="${HOME}/emg2pose_dataset_mini"
 ```
 
+
+
 ## Getting Started (Full Dataset)
 
 Above, we provided instructions for working with a smaller version of the dataset as a means
@@ -114,6 +124,8 @@ cd ~ && curl https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset.tar 
 tar -xvf emg2pose_dataset.tar
 ```
 
+
+
 ### Train on the Full Dataset
 
 To launch an example, full training run for the `vemg2pose (tracking)` setting, use the following:
@@ -127,9 +139,12 @@ data_location="${HOME}/emg2pose_dataset"
 ```
 
 The `experiment` CLI option supports the following experiments (see `config/experiment` files):
-* `tracking_vemg2pose`
-* `regression_vemg2pose`
-* `regression_neuropose`
+
+- `tracking_vemg2pose`
+- `regression_vemg2pose`
+- `regression_neuropose`
+
+
 
 ## Downloading Pre-trained Checkpoints
 
@@ -147,6 +162,8 @@ cd ~ && curl "https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_model_check
 # Unpack to ~/emg2pose_model_checkpoints
 tar -xvzf emg2pose_model_checkpoints.tar.gz
 ```
+
+
 
 ## Evaluation / Testing
 
@@ -176,6 +193,8 @@ experiment=tracking_vemg2pose \
 checkpoint="${HOME}/emg2pose_model_checkpoints/tracking_vemg2pose.ckpt"
 ```
 
+
+
 ## Notebook and Visualization
 
 Check out the Jupyter Notebook in `notebooks/getting_started.ipynb` for a brief walkthrough of data
@@ -198,3 +217,4 @@ UmeTrack is licensed under Attribution-NonCommercial 4.0 International, as found
   booktitle={The Thirty-eight Conference on Neural Information Processing Systems Datasets and Benchmarks Track}
 }
 ```
+
