@@ -4,6 +4,12 @@
 
 A dataset of Surface electromyography (sEMG) recordings paired with ground-truth, motion-capture recordings of the hands. Data loading, baseline model training, and baseline model evaluation code are provided.
 
+## Thanos EDA
+
+Preliminary results: windowed sEMG features embedded in 2D with PCA, UMAP and PHATE, coloured by stage (top) and by hand (bottom). Task structure dominates, but hand side leaks in too. See [`eda/`](eda/) for the full analysis.
+
+![Windowed sEMG features in 2D](eda/figures/04_embeddings.png)
+
 
 
 ## Data
