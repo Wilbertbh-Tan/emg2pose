@@ -1,0 +1,17 @@
+# Security checks before every commit. A failed check stops the commit and names the file.
+# Deliberate override: git commit --no-verify   |   Update versions: pre-commit autoupdate
+repos:
+  # Secrets: API keys, tokens, passwords (hundreds of known formats).
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files   # > 10 MB blocked; PDFs exempt
+        args: ["--maxkb=10000"]
+        exclude: \.pdf$
+      - id: check-merge-conflict
