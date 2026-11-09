@@ -1,16 +1,80 @@
-# emg2pose
+# Muscle synergies in wrist sEMG (an emg2pose fork)
+
+A student research project built on Meta's [emg2pose](https://github.com/facebookresearch/emg2pose) dataset.
+
+> **Can we find muscle synergies in wrist sEMG during hand movements, and are they real and useful?**
+
+A *muscle synergy* is a group of muscles that work together. We model the 16-channel EMG as a mix of a few
+synergies, `EMG(t) ≈ W × c(t)`, and find them with NMF (non-negative matrix factorisation). Then we ask:
+
+| | Question | Notebook |
+|---|---|---|
+| **Q1** | How many synergies are there? | 02 |
+| **Q2** | Are they real, not artifacts of the recording? | 03 |
+| **Q3** | Do they predict hand pose almost as well as all 16 channels? | 04 |
+| Q4 *(optional)* | Are they driven by commands? | 06 |
+
+The full plan, with tasks, owners and how each answer could prove us wrong, is in
+**[`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md)**. Read it first.
+
+**Data:** the emg2pose *mini* split: 1 participant, 30 recordings (15 movement tasks × 2 hands), each about
+1 minute, with 16 EMG channels at 2 kHz and 20 hand joint angles from motion capture. With one participant,
+we can't make claims about people in general.
+
+## Quick start
+
+**On Colab:** open a notebook from this repo in Colab (File → Open notebook → GitHub → `Wilbertbh-Tan/emg2pose`)
+and run the first cell. It clones the repo and downloads the mini dataset (~617 MB) by itself.
+
+**Locally:** follow [Setup](#setup) below, then open a notebook from inside the repo. The first cell finds the
+repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
+
+**Run notebook 01 first.** It saves `data/processed_mini.npz`, which all the other notebooks load.
+
+## Notebooks
+
+| # | Notebook | What it does | Owner |
+|---|---|---|---|
+| 01 | [`01_data_prep`](notebooks/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
+| 02 | [`02_how_many_synergies`](notebooks/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1: how many synergies? | Person B |
+| 03 | [`03_are_synergies_real`](notebooks/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2: are they real? | Person C |
+| 04 | [`04_synergies_predict_pose`](notebooks/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3: do they predict hand pose? | Person D |
+| 05 | [`05_results_summary`](notebooks/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
+| 06 | [`06_synergy_dynamics`](notebooks/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Q4: driven by commands? | Person A |
+
+Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill in. Each folder also has a
+`log.md` for notes on what you expected, what happened and what you learned.
+
+Earlier work is in [`notebooks/background/`](notebooks/background/): Meta's tutorial, a first look at the
+data, the feature EDA in [`eda/`](eda/), and an earlier NMF/autoencoder attempt. More advanced ideas for
+later are in [`notebooks/background/advanced_plan/`](notebooks/background/advanced_plan/research_plan.md).
+
+## Team rules
+
+1. **Test on data the model didn't see**, and hold out whole recordings, never random rows.
+2. **Always compare with a simple baseline.** A number alone means nothing.
+3. **Use the shared data from notebook 01.** No private preprocessing.
+4. **One person per notebook.** Restart and "Run all" before committing; pull before you push.
+5. **Write down what you expect before running.** Then compare.
+6. **Never commit data** (`*.hdf5`, `*.npz`, dataset folders). `.gitignore` already blocks them.
+
+## Earlier exploration
+
+Windowed sEMG features embedded in 2D with PCA, UMAP and PHATE, coloured by stage (top) and by hand
+(bottom). Task structure dominates, but hand side leaks in too. See [`eda/`](eda/) for the full analysis.
+These 2D plots are for looking, not concluding.
+
+![Windowed sEMG features in 2D](eda/figures/04_embeddings.png)
+
+---
+
+# Original emg2pose documentation
+
+The rest of this README is Meta's original documentation for the dataset and the baseline models.
 
 [ `[Paper](https://arxiv.org/abs/2412.02725)` ] [ `[Dataset](https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset.tar)` ] [ `[Blog](https://ai.meta.com/blog/open-sourcing-surface-electromyography-datasets-neurips-2024/)` ] [ `[BibTeX](#citing-emg2pose)` ]
 
 A dataset of Surface electromyography (sEMG) recordings paired with ground-truth, motion-capture recordings of the hands. Data loading, baseline model training, and baseline model evaluation code are provided.
-
-## Thanos EDA
-
-Preliminary results: windowed sEMG features embedded in 2D with PCA, UMAP and PHATE, coloured by stage (top) and by hand (bottom). Task structure dominates, but hand side leaks in too. See [`eda/`](eda/) for the full analysis.
-
-![Windowed sEMG features in 2D](eda/figures/04_embeddings.png)
-
-
 
 ## Data
 
@@ -46,8 +110,8 @@ The `metadata.csv` file includes the following information for each HDF5 file:
 
 ```shell
 # Clone the repo, setup environment, and install local package
-# NOTE: the facebookresearch github repo will be available for the camera-ready version
-git clone git@github.com:facebookresearch/emg2pose.git ~/emg2pose
+# Clone this fork (it has the project notebooks and eda/; upstream does not)
+git clone https://github.com/Wilbertbh-Tan/emg2pose.git ~/emg2pose
 cd ~/emg2pose
 conda env create -f environment.yml
 
@@ -201,22 +265,10 @@ checkpoint="${HOME}/emg2pose_model_checkpoints/tracking_vemg2pose.ckpt"
 
 
 
-## Notebooks
+## Notebook and Visualization
 
-**Start here:** [`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md), with the research question, tasks and owners.
-Every notebook runs on Colab and locally; its first cell finds the repo and the data.
-
-| # | Notebook | Question |
-|---|---|---|
-| 01 | [`01_data_prep`](notebooks/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) |
-| 02 | [`02_how_many_synergies`](notebooks/02_how_many_synergies/02_how_many_synergies.ipynb) | How many muscle synergies are there? |
-| 03 | [`03_are_synergies_real`](notebooks/03_are_synergies_real/03_are_synergies_real.ipynb) | Are they real, not artifacts? |
-| 04 | [`04_synergies_predict_pose`](notebooks/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Do they predict hand pose? |
-| 05 | [`05_results_summary`](notebooks/05_results_summary/05_results_summary.ipynb) | Final figures and answers |
-| 06 | [`06_synergy_dynamics`](notebooks/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Are they driven by commands? |
-
-Background notebooks (Meta's tutorial, first data exploration, the EDA behind the figures above, and an
-earlier NMF/autoencoder attempt) are in [`notebooks/background/`](notebooks/background/).
+Meta's walkthrough of data loading, inference and visualization is in
+[`notebooks/background/00_getting_started.ipynb`](notebooks/background/00_getting_started.ipynb).
 
 ## License
 
