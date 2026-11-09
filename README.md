@@ -201,10 +201,22 @@ checkpoint="${HOME}/emg2pose_model_checkpoints/tracking_vemg2pose.ckpt"
 
 
 
-## Notebook and Visualization
+## Notebooks
 
-Check out the Jupyter Notebook in `notebooks/getting_started.ipynb` for a brief walkthrough of data
-loading, inference, and data visualization.
+**Start here:** [`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md), with the research question, tasks and owners.
+Every notebook runs on Colab and locally; its first cell finds the repo and the data.
+
+| # | Notebook | Question |
+|---|---|---|
+| 01 | [`01_data_prep`](notebooks/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) |
+| 02 | [`02_how_many_synergies`](notebooks/02_how_many_synergies/02_how_many_synergies.ipynb) | How many muscle synergies are there? |
+| 03 | [`03_are_synergies_real`](notebooks/03_are_synergies_real/03_are_synergies_real.ipynb) | Are they real, not artifacts? |
+| 04 | [`04_synergies_predict_pose`](notebooks/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Do they predict hand pose? |
+| 05 | [`05_results_summary`](notebooks/05_results_summary/05_results_summary.ipynb) | Final figures and answers |
+| 06 | [`06_synergy_dynamics`](notebooks/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Are they driven by commands? |
+
+Background notebooks (Meta's tutorial, first data exploration, the EDA behind the figures above, and an
+earlier NMF/autoencoder attempt) are in [`notebooks/background/`](notebooks/background/).
 
 ## License
 
