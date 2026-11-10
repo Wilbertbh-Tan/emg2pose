@@ -1,7 +1,7 @@
 # Experiment 01: Geometry ("the skatepark")
 
-**Status:** planning · **Notebook:** `notebooks/experiments/advanced_plan/exp01_geometry/geometry.ipynb` (to be written by the user)
-**Builds on:** `notebooks/eda/02_eda_features_embeddings.ipynb`, Experiment 1 in `notebooks/eda/03_THANOS_DimRed.ipynb`
+**Status:** planning · **Notebook:** `notebooks/experiments/advanced_plan/exp01_geometry/geometry.ipynb` (to be written)
+**Builds on:** `notebooks/eda/02_eda_features_embeddings.ipynb`, Experiment 1 of the old `03_THANOS_DimRed` notebook (removed; see git history before commit `c62d0c0`)
 
 ## Question
 Can muscle synergies be identified in this data (H0), and do they pass the tests a physiological

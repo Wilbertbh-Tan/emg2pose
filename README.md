@@ -50,7 +50,7 @@ Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill 
 | Folder | What's in it |
 |---|---|
 | [`notebooks/experiments/`](notebooks/experiments/) | The project notebooks above (01–06), plus [`advanced_plan/`](notebooks/experiments/advanced_plan/research_plan.md) with ideas for later |
-| [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks: 00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 NMF/autoencoder attempt · 04 THANOS master pipeline |
+| [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks: 00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 THANOS master pipeline |
 | [`eda/`](eda/) | Helper code the EDA notebooks import (`features.py`), the figure script and saved figures |
 | [`docs/`](docs/) | Slides and talk script |
 

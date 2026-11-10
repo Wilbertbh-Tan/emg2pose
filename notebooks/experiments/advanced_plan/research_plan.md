@@ -179,7 +179,7 @@ numbers and the EMG↔pose relationship, 03 describes motion in the latent space
 | 0.2 | `01_the_semg_dream`: first look at raw signals | done |
 | 0.3 | `02_eda_features_embeddings`: 80 windowed features, PCA dimensionality, UMAP/PHATE | done |
 | 0.4 | Exercise: fix the kNN cross-validation leak in notebook 02, section 6 (`GroupKFold`) | **to do** |
-| 0.5 | `03_THANOS_DimRed` (revised): run it on Colab, record the numbers in `exp01_geometry/log.md` | **to do** |
+| 0.5 | `03_THANOS_DimRed`: dropped, its parts now live in experiments 01, 02, 04 and 06 | **dropped** |
 
 ## Stage 1: Geometry ([brief](exp01_geometry/brief.md))
 | Step | What | Shows |
