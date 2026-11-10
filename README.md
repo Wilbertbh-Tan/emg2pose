@@ -60,17 +60,31 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 
 ## Notebooks
 
-| # | Notebook | What it does | Owner |
-|---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
-| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1: how many sEMG synergies (k)? | Person B |
-| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1: are the synergies stable and real? | Person C |
-| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Toward Aim 2: does the sEMG bottleneck keep pose information? | Person D |
-| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
-| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional, not in the proposal)* does EMG drive the pose over time? | Person A |
+✅ = in the proposal · 🧪 = small pilot of a proposal aim · ➕ = beyond the proposal (optional)
+
+| # | Notebook | What it does | Proposal | Owner |
+|---|---|---|---|---|
+| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | ✅ preprocessing | Person A |
+| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1: how many sEMG synergies (k) and eigenpostures (K_POSE)? | ✅ Aim 1 | Person B |
+| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1: are the synergies stable? Plus extra checks that they're real | ✅ stability · ➕ checks 1–4 | Person C |
+| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Mini 2 × 2 with ridge: do the bottlenecks keep the pose information? | 🧪 Aim 2 pilot | Person D |
+| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and what they mean for H1 | ✅ | Everyone |
+| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | Does EMG drive the pose over time? | ➕ | Person A |
 
 Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill in. Each folder also has a
 `log.md` for notes on what you expected, what happened and what you learned.
+
+### Not started yet
+
+These parts of the proposal need the full dataset (193 people) or a deep decoder, so no notebook covers them yet.
+Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketches most of them.
+
+| Proposal step | Lead | Starting point |
+|---|---|---|
+| Download the full dataset and reproduce the vEMG2Pose baseline | Wilbert | Meta's code in [`emg2pose/`](emg2pose/) |
+| Full 2 × 2 with a deep decoder, random non-negative / orthonormal controls, held-out users | Naveen | Master pipeline, Module 2 |
+| Calibration curves, area under the curve, REACT comparison | Andres | Master pipeline, Module 3 |
+| Electrode-count and sampling-rate ablations | Youssef | Master pipeline, Module 4 |
 
 ### Folder layout
 

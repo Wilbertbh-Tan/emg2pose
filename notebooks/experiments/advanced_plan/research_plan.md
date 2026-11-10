@@ -242,7 +242,7 @@ Course slides are shared separately. Page numbers are PDF positions, not printed
 
 **Warm-up:** Problem Set 2 (PCA/FA, EM for FA, NMF vs PCA) is close to stage 1. Only the solutions
 to 1(b) and 4(a) are in the folder.
-**Notation:** follow Lecture 9: x = observation, z = latent, A, C, Q, R = parameters, B and u = input.
+**Notation:** x = observation, z = latent, A, C, Q, R = parameters, B and u = input.
 **Not taught in the course:** CCA/PLS (reduced-rank regression is the closest), UMAP, sEMG preprocessing.
 
 - Course pre-readings are shared separately (file names like `0922_PreReading.pdf`).
