@@ -1,25 +1,51 @@
-# Muscle synergies in wrist sEMG (an emg2pose fork)
+# THANOS: person, placement or drift? Muscle synergies in wrist sEMG
 
-A student research project built on Meta's [emg2pose](https://github.com/facebookresearch/emg2pose) dataset.
+A student research project (NMA Impact Scholars 2026) on Meta's [emg2pose](https://github.com/facebookresearch/emg2pose) benchmark.
 
-> **Can we find muscle synergies in wrist sEMG during hand movements, and are they real and useful?**
+> **Hypothesis:** when a wristband reads your muscles, **where the band sits matters more than who you are.**
+> Physical placement of the band, rather than a person's anatomy, dominates how each muscle shows up across the 16 electrodes.
 
-A *muscle synergy* is a group of muscles that work together. We model the 16-channel EMG as a mix of a few
-synergies, `EMG(t) ≈ W × c(t)`, and find them with NMF (non-negative matrix factorisation). Then we ask:
+## Why this matters
 
-| | Question | Notebook |
+sEMG wristbands could read hand movement without cameras, but decoders trained on some people fail on new ones.
+On emg2pose, the best model is off by **15.8°** per joint for a new person doing a new movement, barely better than
+the **18.9°** you get by ignoring the EMG and always guessing the average pose.
+
+Three things could cause this, and each needs a different fix:
+
+| Source of variation | Where it shows up in emg2pose | Fix it would need |
 |---|---|---|
-| **Q1** | How many synergies are there? | 02 |
-| **Q2** | Are they real, not artifacts of the recording? | 03 |
-| **Q3** | Do they predict hand pose almost as well as all 16 channels? | 04 |
-| Q4 *(optional)* | Are they driven by commands? | 06 |
+| **Person** (anatomy, tissue) | Between subjects | Profile each user once |
+| **Placement** (band shifts each time it's put on) | Between sessions of one subject | Recalibrate every time the band goes on |
+| **Drift** (signal changes during one wearing) | Between recordings in one session | Adapt continuously |
 
-The full plan, with tasks, owners and how each answer could prove us wrong, is in
-**[`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md)**. Read it first.
+Nobody has measured these against each other. emg2pose's nesting (193 subjects → 751 sessions → 25,253 recordings)
+lets us separate them.
 
-**Data:** the emg2pose *mini* split: 1 participant, 30 recordings (15 movement tasks × 2 hands), each about
+## Research questions
+
+| Stage | Question | How | Data | Where |
+|---|---|---|---|---|
+| **Aim 1.1** | How many muscle synergies are there? | NMF, pick k by held-out VAF | mini (1 person) | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) |
+| **Aim 1.2** | Are they real, not artifacts? | Shuffle, new-movement, neighbour and two-hands tests | mini | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) |
+| **Aim 1.3** | Do they carry the pose information? | Predict pose from k synergies vs all 16 channels | mini | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) |
+| **Aim 1** | Are synergies **shared across people**, or individual? | Match synergies across subjects after correcting band rotation | full (193 people) | to come |
+| **Aim 2** | How much of the variation is **person vs placement vs drift**? | Mixed-effects variance partition of the per-recording synergy patterns | full | to come |
+
+We are at **Aim 1 on the mini dataset**: building and checking the synergy pipeline on one person before scaling up.
+The full plan, with tasks and how each answer could prove us wrong, is in **[`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md)**.
+
+## What we've found so far
+
+From the [EDA](notebooks/eda/02_eda_features_embeddings.ipynb) on the mini dataset:
+- **The EMG is low-dimensional:** 3 principal components capture 80% of the variance, 7 capture 90%.
+- **Placement leaves a fingerprint:** which hand a recording came from (two placements on one person) is under 1% of
+  the linear variance, yet a nonlinear embedding identifies it 67% of the time (54% linear, 50% chance).
+  That's the first hint for the hypothesis.
+
+**Data now:** the emg2pose *mini* split: 1 participant, 30 recordings (15 movement tasks × 2 hands), each about
 1 minute, with 16 EMG channels at 2 kHz and 20 hand joint angles from motion capture. With one participant,
-we can't make claims about people in general.
+we can't yet make claims about people in general.
 
 ## Quick start
 
@@ -36,9 +62,9 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 | # | Notebook | What it does | Owner |
 |---|---|---|---|
 | 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
-| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1: how many synergies? | Person B |
-| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2: are they real? | Person C |
-| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3: do they predict hand pose? | Person D |
+| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1.1: how many synergies? | Person B |
+| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1.2: are they real? | Person C |
+| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Aim 1.3: do they predict hand pose? | Person D |
 | 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
 | 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Q4: driven by commands? | Person A |
 
