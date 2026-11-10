@@ -1,51 +1,52 @@
-# THANOS: person, placement or drift? Muscle synergies in wrist sEMG
+# T.H.A.N.O.S.: Two-sided Hand-pose Adaptation with Non-negative and Orthogonal Structure
 
-A student research project (NMA Impact Scholars 2026) on Meta's [emg2pose](https://github.com/facebookresearch/emg2pose) benchmark.
+NMA Impact Scholars 2026 · Partner project with Meta Reality Labs on the [emg2pose](https://github.com/facebookresearch/emg2pose) benchmark ·
+Andres Santiago Martinez Hernandez · Naveen Kumar Subramani · Wilbert Tan · Youssef Ibraheem
 
-> **Hypothesis:** when a wristband reads your muscles, **where the band sits matters more than who you are.**
-> Physical placement of the band, rather than a person's anatomy, dominates how each muscle shows up across the 16 electrodes.
+> **Hypothesis (H1):** if low-dimensional representations of sEMG (muscle synergies) and hand pose (eigenpostures)
+> capture structure shared across people, then **constraining both sides of a decoder with them will need less
+> calibration on a new user** to reach a given joint-angle error, matching or beating the baseline model.
+
+**Research question:** does constraining both the input (muscle synergies) and the output (eigenpostures) of a
+baseline decoder with low-dimensional, biologically grounded structure improve generalisation to held-out users?
 
 ## Why this matters
 
-sEMG wristbands could read hand movement without cameras, but decoders trained on some people fail on new ones.
-On emg2pose, the best model is off by **15.8°** per joint for a new person doing a new movement, barely better than
-the **18.9°** you get by ignoring the EMG and always guessing the average pose.
+sEMG wristbands could read continuous hand pose without cameras, but decoders struggle on new people. On emg2pose's
+held-out user + movement split, the vEMG2Pose model is off by **15.63°** per joint, not far from the **18.87°** you get
+by ignoring the EMG and predicting each joint's median angle (Hadidi et al. 2026). A little calibration on the new user
+helps, so **calibration burden is what limits deployment.**
 
-Three things could cause this, and each needs a different fix:
-
-| Source of variation | Where it shows up in emg2pose | Fix it would need |
-|---|---|---|
-| **Person** (anatomy, tissue) | Between subjects | Profile each user once |
-| **Placement** (band shifts each time it's put on) | Between sessions of one subject | Recalibrate every time the band goes on |
-| **Drift** (signal changes during one wearing) | Between recordings in one session | Adapt continuously |
-
-Nobody has measured these against each other. emg2pose's nesting (193 subjects → 751 sessions → 25,253 recordings)
-lets us separate them.
+Our bet: decoders are free to learn high-dimensional, user-specific features, even though both muscle activity and
+hand pose can be described with far fewer dimensions. Forcing the decoder through that shared low-dimensional structure
+might mean it needs less data from each new person.
 
 ## Research questions
 
-| Stage | Question | How | Data | Where |
+| Aim | Question | How | Lead | Weeks |
 |---|---|---|---|---|
-| **Aim 1.1** | How many muscle synergies are there? | NMF, pick k by held-out VAF | mini (1 person) | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) |
-| **Aim 1.2** | Are they real, not artifacts? | Shuffle, new-movement, neighbour and two-hands tests | mini | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) |
-| **Aim 1.3** | Do they carry the pose information? | Predict pose from k synergies vs all 16 channels | mini | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) |
-| **Aim 1** | Are synergies **shared across people**, or individual? | Match synergies across subjects after correcting band rotation | full (193 people) | to come |
-| **Aim 2** | How much of the variation is **person vs placement vs drift**? | Mixed-effects variance partition of the per-recording synergy patterns | full | to come |
+| **Aim 1** | What are stable, low-dimensional representations of sEMG and pose? | **NMF** on sEMG envelopes (muscle synergies) and **PCA** on joint angles (eigenpostures); pick sizes by held-out error and stability | Wilbert | 1–5 |
+| **Aim 2a** | Does each bottleneck help, and does combining them help more? | **2 × 2 design**: neither, sEMG only, pose only, both; same decoder throughout. Compare against **random** bottlenecks of the same size | Naveen | 5–12 |
+| **Aim 2b** | Do the bottlenecks reduce calibration on new users? | Error vs calibration-data curves per held-out user; area under the curve; compare with REACT | Andres | 10–18 |
+| *Secondary* | How few electrodes and how low a sampling rate still work? | Ablate channels (16 → 8 → 4) and rate (2 kHz → 250 Hz) on the best model | Youssef | 16–22 |
+| | Write-up | Robustness checks, micropublication, presentation | Everyone | 21–26 |
 
-We are at **Aim 1 on the mini dataset**: building and checking the synergy pipeline on one person before scaling up.
-The full plan, with tasks and how each answer could prove us wrong, is in **[`PROJECT_OUTLINE.md`](PROJECT_OUTLINE.md)**.
+**What each result would mean:** if the dual bottleneck beats both single ones *and* the random controls, H1 is
+supported. If it helps compression but not calibration, low dimensions are useful for hardware but don't solve
+cross-user transfer. If neither helps, unconstrained decoders win. All three are worth reporting.
+
+**Where we are:** Aim 1, on the mini dataset (1 person). The notebooks in
+[`notebooks/experiments/`](notebooks/experiments/) build and check the sEMG synergy side first.
 
 ## What we've found so far
 
-From the [EDA](notebooks/eda/02_eda_features_embeddings.ipynb) on the mini dataset:
-- **The EMG is low-dimensional:** 3 principal components capture 80% of the variance, 7 capture 90%.
-- **Placement leaves a fingerprint:** which hand a recording came from (two placements on one person) is under 1% of
-  the linear variance, yet a nonlinear embedding identifies it 67% of the time (54% linear, 50% chance).
-  That's the first hint for the hypothesis.
+From the [EDA](notebooks/eda/02_eda_features_embeddings.ipynb) on the mini dataset: **3 components explain 80% of the
+sEMG variance and 7 explain 90%**, with the first component tracking overall activation rather than which muscles are
+active. So the sEMG really is low-dimensional, which Aim 1 builds on.
 
 **Data now:** the emg2pose *mini* split: 1 participant, 30 recordings (15 movement tasks × 2 hands), each about
-1 minute, with 16 EMG channels at 2 kHz and 20 hand joint angles from motion capture. With one participant,
-we can't yet make claims about people in general.
+1 minute, with 16 EMG channels at 2 kHz and 20 hand joint angles from motion capture. Cross-user questions
+(Aim 2) need the full dataset (193 people).
 
 ## Quick start
 
@@ -62,11 +63,11 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 | # | Notebook | What it does | Owner |
 |---|---|---|---|
 | 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
-| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1.1: how many synergies? | Person B |
-| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1.2: are they real? | Person C |
-| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Aim 1.3: do they predict hand pose? | Person D |
+| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1: how many sEMG synergies (k)? | Person B |
+| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1: are the synergies stable and real? | Person C |
+| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Toward Aim 2: does the sEMG bottleneck keep pose information? | Person D |
 | 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
-| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Q4: driven by commands? | Person A |
+| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional, not in the proposal)* does EMG drive the pose over time? | Person A |
 
 Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill in. Each folder also has a
 `log.md` for notes on what you expected, what happened and what you learned.
