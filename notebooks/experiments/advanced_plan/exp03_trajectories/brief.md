@@ -1,6 +1,6 @@
 # Experiment 03: Trajectories ("the skater")
 
-**Status:** planning · **Notebook:** `notebooks/exp03_trajectories/trajectories.ipynb` (to be written by the user)
+**Status:** planning · **Notebook:** `notebooks/experiments/advanced_plan/exp03_trajectories/trajectories.ipynb` (to be written by the user)
 **Builds on:** the embeddings from Experiment 01
 
 ## Question

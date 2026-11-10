@@ -1,7 +1,7 @@
 # Experiment 04: Latent dynamics (self-sustaining or input-driven?)
 
-**Status:** planning · **Notebook:** `notebooks/exp04_latent_dynamics/latent_dynamics.ipynb` (to be written by the user)
-**Builds on:** Experiment 2 in `notebooks/03_THANOS_DimRed.ipynb` (replaces it)
+**Status:** planning · **Notebook:** `notebooks/experiments/advanced_plan/exp04_latent_dynamics/latent_dynamics.ipynb` (to be written by the user)
+**Builds on:** Experiment 2 in `notebooks/eda/03_THANOS_DimRed.ipynb` (replaces it)
 
 ## Question
 Is hand movement better described as autonomous dynamics (the state evolves by itself) or as

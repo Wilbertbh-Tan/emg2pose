@@ -40,16 +40,16 @@ emg2pose "mini" dataset: **1 participant, 30 recordings** (15 movement tasks × 
 
 | # | Notebook | Answers | Owner | Needs first |
 |---|---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/01_data_prep/01_data_prep.ipynb) | Makes clean data for everyone | Person A | none |
-| 02 | [`02_how_many_synergies`](notebooks/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1 | Person B | 01 |
-| 03 | [`03_are_synergies_real`](notebooks/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2 | Person C | 01, and k from 02 |
-| 04 | [`04_synergies_predict_pose`](notebooks/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3 | Person D | 01, and k from 02 |
-| 05 | [`05_results_summary`](notebooks/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone | 02–04 |
-| 06 | [`06_synergy_dynamics`](notebooks/06_synergy_dynamics/06_synergy_dynamics.ipynb) *(optional)* | Q4 | Person A | 01, 04 |
+| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Makes clean data for everyone | Person A | none |
+| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1 | Person B | 01 |
+| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2 | Person C | 01, and k from 02 |
+| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3 | Person D | 01, and k from 02 |
+| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone | 02–04 |
+| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) *(optional)* | Q4 | Person A | 01, 04 |
 
-Each notebook lives in its own folder under `notebooks/`, next to a `log.md` for notes. Notebook 01 is
+Each notebook lives in its own folder under `notebooks/experiments/`, next to a `log.md` for notes. Notebook 01 is
 already built; 02–06 are starter notebooks with `# TODO` gaps. 03 and 04 can start before 02 is
-finished by using k = 4 as a placeholder. Older exploratory notebooks are in `notebooks/background/`.
+finished by using k = 4 as a placeholder. Exploratory notebooks are in `notebooks/eda/`.
 
 ## Tasks for each notebook
 
@@ -103,7 +103,7 @@ Four checks (plus a quick stability check first), each giving one number and one
 
 | Phase | Who | What |
 |---|---|---|
-| **1. Setup and learning** | Everyone | Get Colab working; run `notebooks/01_data_prep` together; read 0922 (Cunningham & Yu). then everyone opens their own notebook and reads its first cell |
+| **1. Setup and learning** | Everyone | Get Colab working; run `notebooks/experiments/01_data_prep` together; read 0922 (Cunningham & Yu). then everyone opens their own notebook and reads its first cell |
 | **2. Main work** | B, C, D in parallel; A on 06 or helping | Notebooks 02, 03, 04 |
 | **3. Combine** | Everyone | Notebook 05, presentation |
 
@@ -127,4 +127,4 @@ Four checks (plus a quick stability check first), each giving one number and one
 
 ---
 More detail for later (advanced methods, full metrics, extra hypotheses):
-[`notebooks/background/advanced_plan/research_plan.md`](notebooks/background/advanced_plan/research_plan.md).
+[`notebooks/experiments/advanced_plan/research_plan.md`](notebooks/experiments/advanced_plan/research_plan.md).

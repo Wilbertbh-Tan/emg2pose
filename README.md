@@ -35,19 +35,24 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 
 | # | Notebook | What it does | Owner |
 |---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
-| 02 | [`02_how_many_synergies`](notebooks/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1: how many synergies? | Person B |
-| 03 | [`03_are_synergies_real`](notebooks/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2: are they real? | Person C |
-| 04 | [`04_synergies_predict_pose`](notebooks/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3: do they predict hand pose? | Person D |
-| 05 | [`05_results_summary`](notebooks/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
-| 06 | [`06_synergy_dynamics`](notebooks/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Q4: driven by commands? | Person A |
+| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | Person A |
+| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Q1: how many synergies? | Person B |
+| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Q2: are they real? | Person C |
+| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Q3: do they predict hand pose? | Person D |
+| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | Everyone |
+| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | *(optional)* Q4: driven by commands? | Person A |
 
 Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill in. Each folder also has a
 `log.md` for notes on what you expected, what happened and what you learned.
 
-Earlier work is in [`notebooks/background/`](notebooks/background/): Meta's tutorial, a first look at the
-data, the feature EDA in [`eda/`](eda/), and an earlier NMF/autoencoder attempt. More advanced ideas for
-later are in [`notebooks/background/advanced_plan/`](notebooks/background/advanced_plan/research_plan.md).
+### Folder layout
+
+| Folder | What's in it |
+|---|---|
+| [`notebooks/experiments/`](notebooks/experiments/) | The project notebooks above (01–06), plus [`advanced_plan/`](notebooks/experiments/advanced_plan/research_plan.md) with ideas for later |
+| [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks: 00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 NMF/autoencoder attempt · 04 THANOS master pipeline |
+| [`eda/`](eda/) | Helper code the EDA notebooks import (`features.py`), the figure script and saved figures |
+| [`docs/`](docs/) | Slides and talk script |
 
 ## Team rules
 
@@ -268,7 +273,7 @@ checkpoint="${HOME}/emg2pose_model_checkpoints/tracking_vemg2pose.ckpt"
 ## Notebook and Visualization
 
 Meta's walkthrough of data loading, inference and visualization is in
-[`notebooks/background/00_getting_started.ipynb`](notebooks/background/00_getting_started.ipynb).
+[`notebooks/eda/00_getting_started.ipynb`](notebooks/eda/00_getting_started.ipynb).
 
 ## License
 

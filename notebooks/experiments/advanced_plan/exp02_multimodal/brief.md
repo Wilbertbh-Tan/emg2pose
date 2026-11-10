@@ -1,7 +1,7 @@
 # Experiment 02: Multimodal reconstruction (sEMG ↔ kinematics)
 
-**Status:** idea (raised 2026-11-08) · **Notebook:** `notebooks/exp02_multimodal/multimodal.ipynb` (to be written by the user)
-**Builds on:** `notebooks/00_getting_started.ipynb` (pre-trained EMG→pose model, forward kinematics, IK-failure mask)
+**Status:** idea (raised 2026-11-08) · **Notebook:** `notebooks/experiments/advanced_plan/exp02_multimodal/multimodal.ipynb` (to be written by the user)
+**Builds on:** `notebooks/eda/00_getting_started.ipynb` (pre-trained EMG→pose model, forward kinematics, IK-failure mask)
 
 ## Question
 Do sEMG and hand kinematics share a common low-dimensional latent space? How much of each
