@@ -64,7 +64,7 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 
 | # | Notebook | What it does | Proposal | Owner |
 |---|---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Clean, shared data for every other notebook (run first) | ✅ preprocessing | Person A |
+| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Build the clean, shared data yourself (fill-in-the-blank) and explore its format | ✅ preprocessing | Person A |
 | 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1: how many sEMG synergies (k) and eigenpostures (K_POSE)? | ✅ Aim 1 | Person B |
 | 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1: are the synergies stable? Plus extra checks that they're real | ✅ stability · ➕ checks 1–4 | Person C |
 | 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Mini 2 × 2 with ridge: do the bottlenecks keep the pose information? | 🧪 Aim 2 pilot | Person D |
@@ -91,9 +91,9 @@ Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketche
 | Folder | What's in it |
 |---|---|
 | [`notebooks/experiments/`](notebooks/experiments/) | The project notebooks above (01–06), plus [`advanced_plan/`](notebooks/experiments/advanced_plan/research_plan.md) with ideas for later |
-| [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks: 00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 THANOS master pipeline |
-| [`eda/`](eda/) | Helper code the EDA notebooks import (`features.py`), the figure script and saved figures |
-| [`docs/`](docs/) | Slides and talk script |
+| [`notebooks/experiments/01_data_prep/prep.py`](notebooks/experiments/01_data_prep/prep.py) | The reference data prep. Notebooks 02–06 run it to make `data/processed_mini.npz`; notebook 01 teaches the same steps as fill-in-the-blank exercises |
+| [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks (00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 THANOS master pipeline), the helper code they import (`features.py`), the figure script and saved figures. `archive/` holds personal scratch notebooks and is never committed |
+| [`docs/`](docs/) | Proposal, slides and talk script |
 
 ## Team rules
 
@@ -107,10 +107,10 @@ Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketche
 ## Earlier exploration
 
 Windowed sEMG features embedded in 2D with PCA, UMAP and PHATE, coloured by stage (top) and by hand
-(bottom). Task structure dominates, but hand side leaks in too. See [`eda/`](eda/) for the full analysis.
+(bottom). Task structure dominates, but hand side leaks in too. See [`notebooks/eda/`](notebooks/eda/) for the full analysis.
 These 2D plots are for looking, not concluding.
 
-![Windowed sEMG features in 2D](eda/figures/04_embeddings.png)
+![Windowed sEMG features in 2D](notebooks/eda/figures/04_embeddings.png)
 
 ---
 
@@ -156,7 +156,7 @@ The `metadata.csv` file includes the following information for each HDF5 file:
 
 ```shell
 # Clone the repo, setup environment, and install local package
-# Clone this fork (it has the project notebooks and eda/; upstream does not)
+# Clone this fork (it has the project notebooks and notebooks/eda/; upstream does not)
 git clone https://github.com/Wilbertbh-Tan/emg2pose.git ~/emg2pose
 cd ~/emg2pose
 conda env create -f environment.yml
