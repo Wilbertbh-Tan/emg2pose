@@ -1,8 +1,8 @@
 """Reference data prep for the THANOS notebooks.
 
 Builds ``data/processed_mini.npz`` from the 30 raw emg2pose mini recordings, so
-every teammate works on identical data. Notebooks 02-06 run this script when
-the file is missing.
+every teammate works on identical data. Notebooks 02-09 run this script when
+the file is missing or was built by an older version (``DATA_VERSION``).
 
 Notebook 01 walks through the same steps as fill-in-the-blank exercises and
 compares your version against this one. Try the notebook before reading this.
@@ -23,6 +23,10 @@ from scipy import signal
 FS_OUT: int = 50  # samples per second after downsampling
 TRAIN_FRACTION: float = 0.8
 GAP: int = FS_OUT  # 1 s gap between train and test, so smoothing can't leak across
+POSE_CUTOFF_HZ: float = 6.0  # low-pass for the pose (standard for human movement; keeps ~96% of its power)
+POSE_PAD: int = 2  # frames (40 ms) marked invalid on each side of a tracking dropout
+POSE_MIN_LEN: int = 25  # valid stretches shorter than 0.5 s are marked invalid
+DATA_VERSION: int = 2  # bump when the pipeline changes; notebooks rebuild an older processed_mini.npz
 MINI_URL: str = "https://fb-ctrl-oss.s3.amazonaws.com/emg2pose/emg2pose_dataset_mini.tar"
 
 
@@ -81,6 +85,35 @@ def valid_pose_mask(pose: np.ndarray) -> np.ndarray:
     return ~np.all(np.isclose(pose, 0.0), axis=1) & ~np.isnan(pose).any(axis=1)
 
 
+def smooth_pose(pose: np.ndarray, valid: np.ndarray, fs_out: int = FS_OUT, cutoff: float = POSE_CUTOFF_HZ,
+                pad: int = POSE_PAD, min_len: int = POSE_MIN_LEN) -> tuple[np.ndarray, np.ndarray]:
+    """Clean the 50 Hz pose of one recording.
+
+    1. Shrink the valid mask: mark ``pad`` frames on each side of every dropout invalid (tracking is wobbly next
+       to a failure), then drop valid stretches shorter than ``min_len`` frames.
+    2. Low-pass each remaining valid stretch separately (4th-order Butterworth, zero phase), never across a
+       dropout, so the zeros of a failed frame can't smear into good frames.
+
+    pose (T, 20), valid (T,) bool -> smoothed pose (T, 20) float32 (invalid rows unchanged), new valid (T,) bool.
+    """
+    bad = ~valid
+    grown = bad.copy()
+    for k in range(1, pad + 1):
+        grown[k:] |= bad[:-k]
+        grown[:-k] |= bad[k:]
+    ok = ~grown
+    edges = np.diff(np.r_[0, ok.astype(int), 0])
+    starts, stops = np.where(edges == 1)[0], np.where(edges == -1)[0]
+    out = pose.astype(np.float32).copy()
+    sos = signal.butter(4, cutoff, fs=fs_out, output="sos")
+    for a, b in zip(starts, stops):
+        if b - a < min_len:
+            ok[a:b] = False
+        else:
+            out[a:b] = signal.sosfiltfilt(sos, pose[a:b], axis=0)
+    return out, ok
+
+
 def split_labels(n: int, train_fraction: float = TRAIN_FRACTION, gap: int = GAP) -> np.ndarray:
     """(n,) int8 labels: 0 = train (first part), -1 = gap, 1 = test (the rest)."""
     lab = np.zeros(n, dtype=np.int8)
@@ -103,7 +136,9 @@ def build_dataset(files: list[str]) -> dict[str, np.ndarray]:
         p = pose_deg[:: int(round(fs / FS_OUT))][: len(env)]
         env = env[: len(p)]
 
-        values = [env, p.astype(np.float32), valid_pose_mask(p),
+        p, p_valid = smooth_pose(p, valid_pose_mask(p))
+
+        values = [env, p.astype(np.float32), p_valid,
                   np.full(len(env), r, np.int16), split_labels(len(env))]
         for k, v in zip(cols, values):
             cols[k].append(v)
@@ -113,8 +148,16 @@ def build_dataset(files: list[str]) -> dict[str, np.ndarray]:
 
     data = {k: np.concatenate(v) for k, v in cols.items()}
     data.update(stage=np.array(stages), side=np.array(sides),
-                filename=np.array(names), fs=np.array(FS_OUT))
+                filename=np.array(names), fs=np.array(FS_OUT), version=np.array(DATA_VERSION))
     return data
+
+
+def is_current(path: Path) -> bool:
+    """True if ``path`` exists and was built by this version of the pipeline."""
+    if not path.exists():
+        return False
+    with np.load(path) as d:
+        return "version" in d.files and int(d["version"]) == DATA_VERSION
 
 
 def main() -> None:

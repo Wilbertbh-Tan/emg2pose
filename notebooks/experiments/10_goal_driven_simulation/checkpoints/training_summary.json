@@ -1,0 +1,48 @@
+{
+ "rotation_by_fold": {
+  "0": [
+   7,
+   1,
+   6,
+   1
+  ],
+  "1": [
+   5,
+   1,
+   4,
+   0
+  ]
+ },
+ "rotation_notes": {
+  "0": [
+   "left: best rotation 7 flip 1 (r 0.123; median of the 32 options 0.038)",
+   "right: best rotation 6 flip 1 (r 0.102; median of the 32 options 0.043)"
+  ],
+  "1": [
+   "left: best rotation 5 flip 1 (r 0.073; median of the 32 options 0.005)",
+   "right: best rotation 4 flip 0 (r 0.108; median of the 32 options 0.028)"
+  ]
+ },
+ "lam_effort": 0.3,
+ "lam_emg_by_fold": {
+  "0": 3.0,
+  "1": 10.0
+ },
+ "lambda_table": [
+  "fold 0 goal-driven reference: val pose 8.64 deg (pose limit +20% = 10.37)",
+  "fold 0 lam_emg 0.3: val pose 8.73 | val EMG r 0.067",
+  "fold 0 lam_emg 1: val pose 8.98 | val EMG r 0.069",
+  "fold 0 lam_emg 3: val pose 9.66 | val EMG r 0.098   <- chosen",
+  "fold 0 lam_emg 10: val pose 11.01 | val EMG r 0.148 (pose over the limit)",
+  "fold 1 goal-driven reference: val pose 8.45 deg (pose limit +20% = 10.14)",
+  "fold 1 lam_emg 0.3: val pose 8.46 | val EMG r 0.113",
+  "fold 1 lam_emg 1: val pose 8.56 | val EMG r 0.154",
+  "fold 1 lam_emg 3: val pose 8.91 | val EMG r 0.198",
+  "fold 1 lam_emg 10: val pose 10.05 | val EMG r 0.218   <- chosen"
+ ],
+ "iters": 1500,
+ "batch": 128,
+ "window_frames": 100,
+ "hidden": 128,
+ "body": "per fold: rest posture and joint limits from the train split of that fold's training recordings (ref10.fold_body)"
+}

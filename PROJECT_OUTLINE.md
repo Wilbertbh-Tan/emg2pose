@@ -46,69 +46,40 @@ emg2pose "mini" dataset: **1 participant, 30 recordings** (15 movement tasks × 
 1 minute. Each recording has **16 EMG channels** (a wristband, 2,000 samples per second) and
 **20 hand joint angles** (motion capture).
 
-## Notebooks: 5 core + 1 optional
+## Notebooks: the investigation ladder
 
-| # | Notebook | Answers | Proposal | Owner | Needs first |
-|---|---|---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Makes clean data for everyone | ✅ | Person A | none |
-| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1a + 1b: k and K_POSE | ✅ | Person B | 01 |
-| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1c stability ✅, realness checks ➕ | ✅ + ➕ | Person C | 01, and k from 02 |
-| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Pilot: mini 2 × 2 | 🧪 | Person D | 01, k and K_POSE from 02 |
-| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and answers | ✅ | Everyone | 02–04 |
-| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) *(optional)* | Does EMG drive pose over time? | ➕ | Person A | 01, 04 |
+The notebooks follow one ladder (details, gate results and the evaluation of every notebook:
+[`notebooks/experiments/EVALUATION.md`](notebooks/experiments/EVALUATION.md)). Each stage asks one question, has a
+baseline and a null, and ends in a **gate** that decides whether the next stage is worth running. Every notebook has
+the same format: from-scratch `# TODO` tasks with three hints, ✅ checks against a reference module, ✍️ questions,
+a methodology section and a gate. Shared evaluation rules: [`common/protocol.py`](notebooks/experiments/common/protocol.py).
 
-Each notebook lives in its own folder under `notebooks/experiments/`, next to a `log.md` for notes. Notebook 01 is
-already built; 02–06 are starter notebooks with `# TODO` gaps. 03 and 04 can start before 02 is
-finished by using k = 4 as a placeholder. Exploratory notebooks are in `notebooks/eda/`.
+**The data has 15 independent blocks**, not 30 recordings: each block is a left and a right recording made at the
+same time (in two blocks the idle hand is labelled `unconstrained`).
 
-## Tasks for each notebook
+| # | Stage | Question | Owner |
+|---|---|---|---|
+| [01](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | 0 Protocol | Build the data; what counts as independent? | Person A |
+| [02](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | 1 Existence | How many synergies, beyond chance? How many eigenpostures? | Person B |
+| [03](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | 1–2 Artefacts | Stable? Not crosstalk? | Person C |
+| [04](notebooks/experiments/04_compositional_structure/04_compositional_structure.ipynb) | 3 Sharing | Do tasks reuse shared structure (Lazzari & Saxena)? | |
+| [05](notebooks/experiments/05_link_to_movement/05_link_to_movement.ipynb) | 4 Movement | What does the EMG encode, at what lag? | Person D |
+| [06](notebooks/experiments/06_shared_subspace/06_shared_subspace.ipynb) | 4b Shared subspace | Which latents do EMG and pose share? | |
+| [07a](notebooks/experiments/07_dynamics/07a_dynamics.ipynb), [07b](notebooks/experiments/07_dynamics/07b_compositional_dynamics.ipynb) | 5 Dynamics | Input-driven? Physical model, resting posture, shared-subspace dynamics; switching motifs and a multitask RNN | Person A |
+| [08](notebooks/experiments/08_bottlenecks/08_bottlenecks.ipynb) | 6 Bottlenecks | Do variance-based vs pose-informed bottlenecks keep information and cut calibration? | |
+| [10](notebooks/experiments/10_goal_driven_simulation/10_goal_driven_simulation.ipynb) | 8 Simulation | Does a simulated hand + controller reproduce the real EMG structure? Which ingredient causes it? | |
+| [09](notebooks/experiments/09_results_summary/09_results_summary.ipynb) | — | Results, gate by gate | Everyone |
 
-### 01 · Data prep (Person A)
-*Already built and tested on synthetic files. Person A runs it on Colab and checks the output.*
-- [ ] Run it on Colab; confirm it saves `data/processed_mini.npz` (30 recordings, 15 stages, 2 hands)
-- [ ] Read each step and explain to the team what the envelope is (filter → rectify → smooth)
-- [ ] Check the printed numbers: % of frames with valid pose, train/test sizes
-- **Done when:** a teammate's notebook loads the file and prints the same numbers as yours.
+Each notebook lives in its own folder under `notebooks/experiments/`, next to a `log.md` and its reference module
+`refNN.py`. Notebooks 02–09 build `data/processed_mini.npz` with `prep.py` when it's missing or out of date, so no
+notebook waits on another person's TODOs.
 
-### 02 · How many dimensions? Synergies and eigenpostures (Person B) ✅
-- [ ] Fit PCA and NMF with k = 1, 2, …, 10
-- [ ] For each k, compute **VAF** on the test data (how much EMG the synergies explain)
-- [ ] Plot VAF vs k for both methods; choose k where the curve flattens
-- [ ] Plot the chosen synergies (bar chart of the 16 channel weights for each)
-- [ ] **Gesture classes:** group the training poses into 6–10 hand shapes (k-means on the 20 joint angles) and name each one
-- [ ] Heatmap of gestures × average synergy activation: are gestures mixtures of shared synergies, or does each have its own?
-- [ ] Predict the gesture from k synergies, k PCA components and all 16 channels (balanced accuracy vs k, with chance = 1/number of classes). Does accuracy level off at the same k as VAF?
-- [ ] **Eigenpostures:** PCA on valid training poses; test-pose error (°) for k = 1 … 10; choose K_POSE (start with a 2° cut-off)
-- **Done when:** a VAF-vs-k figure and chosen k, a figure of the synergies, and a pose-error-vs-k figure with chosen K_POSE. The gesture tasks are extras.
-- **Labels check, never build:** NMF never sees the gesture labels. A method trained with the labels would separate them by design, which proves nothing.
-- **Read first:** Lee & Seung 1999 (NMF), Santello et al. 1998 (eigenpostures), Cunningham & Yu 2014 (dimensionality reduction)
-
-### 03 · Are the synergies stable and real? (Person C) ✅ stability, ➕ the rest
-Four checks (plus a quick stability check first), each giving one number and one figure:
-- [ ] **Stability check:** fit NMF 10 times with different random starts; the synergies should come out the same
-- [ ] ➕ **Shuffle test:** shuffle each channel's timing separately (this breaks co-activation) and refit. Real synergies explain much more than shuffled ones
-- [ ] ➕ **New-movement test:** fit synergies on 12 tasks, test on the other 3. Real synergies still explain the new tasks
-- [ ] ➕ **Neighbour test:** does each synergy spread across the band, or sit on 2–3 neighbouring electrodes (which suggests signal leaking between electrodes)?
-- [ ] ➕ **Two-hands test:** fit left and right hands separately and compare synergies (cosine similarity)
-- **Done when:** a table of the four checks with pass/fail and the number behind each.
-- **Read first:** Tresch, Cheung & d'Avella 2006 (checking extracted synergies)
-
-### 04 · Aim 2 pilot: mini 2 × 2 (Person D) 🧪
-- [ ] **Baseline:** always predict the average pose. This is the number to beat
-- [ ] Predict pose from **all 16 channels** with ridge regression (the best a simple model can do)
-- [ ] Predict pose from the **k synergy activations** c(t) with the same method
-- [ ] Compare using angular error (degrees) and R²
-- [ ] **Mini 2 × 2:** add the pose bottleneck (predict K_POSE eigenposture scores, rebuild 20 angles) and both bottlenecks
-- [ ] *(Extra)* random non-negative basis of size k as a control
-- **Done when:** one table and bar chart of baseline + the four 2 × 2 conditions.
-- **Read first:** [Hadidi et al. 2026](https://arxiv.org/abs/2603.08212), Salter et al. 2024 (emg2pose)
-
-### 05 · Results summary (everyone)
-- [ ] Collect the key figure from each notebook
-- [ ] One paragraph for Aim 1 and one for the Aim 2 pilot, including where we were wrong; then what it means for H1
-
-### 06 · Synergy dynamics ➕ *(beyond the proposal, optional, Person A)*
-- [ ] Fit a simple linear model where EMG drives the pose, and one without EMG; compare their predictions
+## Checklist for each notebook
+- [ ] Your prediction written before running
+- [ ] Every `# TODO` done and every ✅ check passing
+- [ ] Every ✍️ question answered
+- [ ] The Result (gate) filled in: number with a 95% CI over blocks, baseline and null, pass or fail
+- [ ] The gate copied into notebook 09
 
 ## Phases
 

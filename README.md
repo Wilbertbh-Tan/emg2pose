@@ -35,8 +35,10 @@ might mean it needs less data from each new person.
 supported. If it helps compression but not calibration, low dimensions are useful for hardware but don't solve
 cross-user transfer. If neither helps, unconstrained decoders win. All three are worth reporting.
 
-**Where we are:** Aim 1, on the mini dataset (1 person). The notebooks in
-[`notebooks/experiments/`](notebooks/experiments/) build and check the sEMG synergy side first.
+**Where we are:** the mini dataset (1 person), organised as an **investigation ladder**: one question per stage,
+each with a baseline, a null and a gate that decides whether the next stage is worth running. See
+[`notebooks/experiments/EVALUATION.md`](notebooks/experiments/EVALUATION.md) for the evaluation of every notebook
+and the gate results so far.
 
 ## What we've found so far
 
@@ -44,9 +46,10 @@ From the [EDA](notebooks/eda/02_eda_features_embeddings.ipynb) on the mini datas
 sEMG variance and 7 explain 90%**, with the first component tracking overall activation rather than which muscles are
 active. So the sEMG really is low-dimensional, which Aim 1 builds on.
 
-**Data now:** the emg2pose *mini* split: 1 participant, 30 recordings (15 movement tasks × 2 hands), each about
-1 minute, with 16 EMG channels at 2 kHz and 20 hand joint angles from motion capture. Cross-user questions
-(Aim 2) need the full dataset (193 people).
+**Data now:** the emg2pose *mini* split: 1 participant, 30 recordings, each about 1 minute, with 16 EMG channels
+at 2 kHz and 20 hand joint angles from motion capture. The recordings are **15 simultaneous left/right pairs
+("blocks")**, so the honest number of independent units is 15 (notebook 01, Task 6). Cross-user questions (Aim 2)
+need the full dataset (193 people).
 
 ## Quick start
 
@@ -60,24 +63,31 @@ repo root and downloads the dataset if `emg2pose_dataset_mini/` is missing.
 
 ## Notebooks
 
-✅ = in the proposal · 🧪 = small pilot of a proposal aim · ➕ = beyond the proposal (optional)
+Every notebook has the same format: you write the core algorithms yourself (`# TODO` cells with three hints each),
+✅ check cells compare your answer with a reference module, ✍️ questions ask for your own words, and the last cell
+is the **gate** for its stage. Evaluation rules (independent blocks, folds, baselines, nulls, confidence intervals)
+live in [`common/protocol.py`](notebooks/experiments/common/protocol.py).
 
-| # | Notebook | What it does | Proposal | Owner |
-|---|---|---|---|---|
-| 01 | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | Build the clean, shared data yourself (fill-in-the-blank) and explore its format | ✅ preprocessing | Person A |
-| 02 | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | Aim 1: how many sEMG synergies (k) and eigenpostures (K_POSE)? | ✅ Aim 1 | Person B |
-| 03 | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | Aim 1: are the synergies stable? Plus extra checks that they're real | ✅ stability · ➕ checks 1–4 | Person C |
-| 04 | [`04_synergies_predict_pose`](notebooks/experiments/04_synergies_predict_pose/04_synergies_predict_pose.ipynb) | Mini 2 × 2 with ridge: do the bottlenecks keep the pose information? | 🧪 Aim 2 pilot | Person D |
-| 05 | [`05_results_summary`](notebooks/experiments/05_results_summary/05_results_summary.ipynb) | Final figures and what they mean for H1 | ✅ | Everyone |
-| 06 | [`06_synergy_dynamics`](notebooks/experiments/06_synergy_dynamics/06_synergy_dynamics.ipynb) | Does EMG drive the pose over time? | ➕ | Person A |
+| Stage | Question | Notebook | Gate so far |
+|---|---|---|---|
+| 0 Protocol | Can every later number be trusted? | [`01_data_prep`](notebooks/experiments/01_data_prep/01_data_prep.ipynb) | ✅ 15 blocks; data v2 (pose cleaned) |
+| 1 Existence | Is the sEMG low-dimensional beyond chance? | [`02_how_many_synergies`](notebooks/experiments/02_how_many_synergies/02_how_many_synergies.ipynb) | ✅ k = 5, +18.5 points over random synergies |
+| 2 Artefacts | Muscle structure, not crosstalk? | [`03_are_synergies_real`](notebooks/experiments/03_are_synergies_real/03_are_synergies_real.ipynb) | ◐ 2 of 4 synergies wider than one source |
+| 3 Sharing | Do tasks reuse shared structure? | [`04_compositional_structure`](notebooks/experiments/04_compositional_structure/04_compositional_structure.ipynb) | ✅ / ◐ EMG shared far above random; pose much less |
+| 4 Movement | What does the EMG encode, at what lag? | [`05_link_to_movement`](notebooks/experiments/05_link_to_movement/05_link_to_movement.ipynb) | ◐ beats nulls on new tasks; ties with each recording's own posture |
+| 4b Shared subspace | Which latents do EMG and pose share? | [`06_shared_subspace`](notebooks/experiments/06_shared_subspace/06_shared_subspace.ipynb) | ✅ rank 2–3, delayed ~200 ms, **not** the synergies |
+| 5 Dynamics | Input-driven? What structure helps? | [`07a_dynamics`](notebooks/experiments/07_dynamics/07a_dynamics.ipynb), [`07b_compositional_dynamics`](notebooks/experiments/07_dynamics/07b_compositional_dynamics.ipynb) | ✗ input-driven rollouts; ◐ multitask RNN, task-vector transfer |
+| 6 Bottlenecks | Do bottlenecks keep information and cut data needs? | [`08_bottlenecks`](notebooks/experiments/08_bottlenecks/08_bottlenecks.ipynb) | ✗ synergy bottleneck ≈ random; ◐ pose-informed keeps information |
+| 7 People | Do they transfer to new users? | needs the full dataset | not run |
+| 8 Simulation | Does a simulated hand + controller reproduce the real EMG structure? | [`10_goal_driven_simulation`](notebooks/experiments/10_goal_driven_simulation/10_goal_driven_simulation.ipynb) | ✗ 1 of 3 signatures; tendons + crosstalk don't explain it |
+| — | Results, gate by gate | [`09_results_summary`](notebooks/experiments/09_results_summary/09_results_summary.ipynb) | to fill in |
 
-Notebook 01 is built. Notebooks 02–06 are starters with `# TODO` gaps to fill in. Each folder also has a
-`log.md` for notes on what you expected, what happened and what you learned.
+Each folder also has a `log.md` for notes on what you expected, what happened and what you learned.
 
 ### Not started yet
 
 These parts of the proposal need the full dataset (193 people) or a deep decoder, so no notebook covers them yet.
-Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketches most of them.
+Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketches most of them. Don't reuse its effect-size statistics: they treat windows of one person as independent subjects (see [`EVALUATION.md`](notebooks/experiments/EVALUATION.md)).
 
 | Proposal step | Lead | Starting point |
 |---|---|---|
@@ -90,8 +100,8 @@ Santi's [master pipeline](notebooks/eda/03_THANOS_master_pipeline.ipynb) sketche
 
 | Folder | What's in it |
 |---|---|
-| [`notebooks/experiments/`](notebooks/experiments/) | The project notebooks above (01–06), plus [`advanced_plan/`](notebooks/experiments/advanced_plan/research_plan.md) with ideas for later |
-| [`notebooks/experiments/01_data_prep/prep.py`](notebooks/experiments/01_data_prep/prep.py) | The reference data prep. Notebooks 02–06 run it to make `data/processed_mini.npz`; notebook 01 teaches the same steps as fill-in-the-blank exercises |
+| [`notebooks/experiments/`](notebooks/experiments/) | The project notebooks above (01–10), [`EVALUATION.md`](notebooks/experiments/EVALUATION.md) (notebook evaluation and the ladder), [`common/protocol.py`](notebooks/experiments/common/protocol.py) (shared evaluation rules) and [`advanced_plan/`](notebooks/experiments/advanced_plan/research_plan.md) (the hypotheses behind the ladder) |
+| [`notebooks/experiments/01_data_prep/prep.py`](notebooks/experiments/01_data_prep/prep.py) | The reference data prep. Notebooks 02–09 run it to make `data/processed_mini.npz` (and rebuild it when the pipeline version changes); notebook 01 teaches the same steps as fill-in-the-blank exercises |
 | [`notebooks/eda/`](notebooks/eda/) | Exploratory notebooks (00 Meta's tutorial · 01 first look at the data · 02 feature EDA and figures · 03 THANOS master pipeline), the helper code they import (`features.py`), the figure script and saved figures. `archive/` holds personal scratch notebooks and is never committed |
 | [`docs/`](docs/) | Proposal, slides and talk script |
 

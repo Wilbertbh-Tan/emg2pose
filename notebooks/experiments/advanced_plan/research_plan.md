@@ -21,6 +21,12 @@ Cross-user claims need part of the full dataset (stage 5).
 complex model only when the simple one is understood. Each step follows the same loop:
 predict → code → check → review → run → compare → log.
 
+**Where each hypothesis is tested (2026-11-15):** this plan is now merged with the THANOS proposal into one
+**investigation ladder**; see [`../EVALUATION.md`](../EVALUATION.md). H1 → stages 1–2 (notebooks 02, 03);
+H3 → stage 3 (notebook 04); H2 → stage 4 and 4b (notebooks 05, 06); H4 → stage 5 (notebooks 07a, 07b);
+H5 → stage 7 (full dataset). The proposal's bottleneck question is stage 6 (notebook 08). The unit of
+replication is the **recording block** (15 simultaneous left/right pairs; see `common/protocol.py`).
+
 ## Hypotheses
 
 Each is written so a result can prove it wrong. H1–H5 each test one property that physiological
