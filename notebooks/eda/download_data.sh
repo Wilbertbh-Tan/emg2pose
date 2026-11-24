@@ -3,7 +3,9 @@
 # The full dataset is 431 GB; see the upstream README if you need it.
 set -euo pipefail
 
-DEST="${1:-$HOME}"
+# Default: the repo's data/ folder, where every notebook looks first.
+DEST="${1:-$(cd "$(dirname "$0")/../.." && pwd)/data}"
+mkdir -p "$DEST"
 BASE="https://fb-ctrl-oss.s3.amazonaws.com/emg2pose"
 
 echo "Downloading metadata CSV (5.5 MB) to $DEST ..."

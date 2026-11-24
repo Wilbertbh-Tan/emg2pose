@@ -15,10 +15,13 @@ from scipy import signal
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(ROOT / "notebooks" / "experiments" / "01_data_prep"))
 from features import BANDS, SAMPLE_RATE, build_matrix, read_session  # noqa: E402
+from prep import find_data_dir  # noqa: E402
 
-DATA_DIR = Path.home() / "emg2pose_dataset_mini"
+DATA_DIR = find_data_dir(ROOT)  # data/ first, then repo root; downloads to data/ if missing
 FIG_DIR = Path(__file__).parent / "figures"
 CACHE = Path(__file__).parent / ".cache"
 N_EMBED_SAMPLE = 6000

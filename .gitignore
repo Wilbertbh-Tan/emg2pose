@@ -174,7 +174,7 @@ emg2pose_dataset/
 emg2pose_metadata.csv
 
 # Local scratch / personal working files
-Wilbert_EDA/
+notebooks/eda/archive/
 papers/
 *.local.ipynb
 scratch/

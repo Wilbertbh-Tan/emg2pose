@@ -9,7 +9,7 @@ up a nuisance variable — which is precisely the problem a manifold-alignment m
 be proposed to solve.
 
 Everything below was computed from the data; the numbers are reproducible with
-`python eda/make_figures.py`.
+`python notebooks/eda/make_figures.py`.
 
 ---
 
@@ -46,7 +46,7 @@ have roughly half.
 
 ## Method
 
-Raw 2 kHz sEMG → windowed features (`eda/features.py`):
+Raw 2 kHz sEMG → windowed features (`notebooks/eda/features.py`):
 
 - 250 ms windows, 125 ms hop (50% overlap)
 - per channel: log RMS amplitude + log power in 4 bands (20–50, 50–100, 100–200, 200–450 Hz)
@@ -159,9 +159,9 @@ alignment used for cross-session EEG transfer.
 ## Reproducing
 
 ```bash
-pip install -r eda/requirements.txt
-bash eda/download_data.sh      # metadata CSV + 618 MB mini dataset
-python eda/make_figures.py     # writes eda/figures/
+pip install -r notebooks/eda/requirements.txt
+bash notebooks/eda/download_data.sh      # metadata CSV + 618 MB mini dataset
+python notebooks/eda/make_figures.py     # writes notebooks/eda/figures/
 ```
 
 Data files are gitignored and never committed.
